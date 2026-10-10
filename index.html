@@ -9,6 +9,7 @@
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #161412; --ink: #ece7de; color-scheme: dark } }
 :root[data-theme="dark"] { --bg: #161412; --ink: #ece7de; color-scheme: dark }
 * { box-sizing: border-box }
+[hidden] { display: none !important }
 body { background: var(--bg); margin: 0 }
 .grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; padding: 16px; max-width: 1600px; margin: 0 auto }
 .grid button { all: unset; cursor: zoom-in; display: block; aspect-ratio: 4 / 5; max-width: 100% }
