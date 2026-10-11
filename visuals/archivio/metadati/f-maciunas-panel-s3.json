@@ -1,0 +1,12 @@
+{
+ "plate": "f-panel",
+ "seed": 3,
+ "scale": 1,
+ "source": "are.na/sam-hart/fluxus-1474596946",
+ "coverage": {
+  "red_only": 0.026686859130859376,
+  "black": 0.08077392578125,
+  "paper": 0.8925392150878906
+ },
+ "seconds": 0.3
+}

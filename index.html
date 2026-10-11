@@ -5,48 +5,121 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Agentic Bricoleur</title>
 <style>
-:root { --bg: #eeebe4; --ink: #1a1715 }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #161412; --ink: #ece7de; color-scheme: dark } }
-:root[data-theme="dark"] { --bg: #161412; --ink: #ece7de; color-scheme: dark }
+:root { --bg: #eeebe4; --ink: #1a1715; --dim: #7d776d; --red: #e6331f; --rule: #d6d1c7 }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #161412; --ink: #ece7de; --dim: #8d877d; --red: #f93922; --rule: #2c2925; color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #161412; --ink: #ece7de; --dim: #8d877d; --red: #f93922; --rule: #2c2925; color-scheme: dark }
 * { box-sizing: border-box }
 [hidden] { display: none !important }
-body { background: var(--bg); margin: 0 }
-.grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; padding: 16px; max-width: 1600px; margin: 0 auto }
-.grid button { all: unset; cursor: zoom-in; display: block; aspect-ratio: 4 / 5; max-width: 100% }
-.grid button:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px }
-.grid img { width: 100%; height: 100%; object-fit: cover; display: block }
-.loupe { position: fixed; inset: 0; z-index: 10; background: var(--bg); display: grid; place-items: center; padding: 16px; cursor: zoom-out }
-.loupe img { max-width: 100%; max-height: calc(100vh - 32px); width: auto; height: auto }
-@media (max-width: 1000px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)) } }
-@media (max-width: 600px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px } }
+body { background: var(--bg); color: var(--ink); margin: 0; font: 13px/1.45 Menlo, ui-monospace, SFMono-Regular, monospace }
+a { color: inherit; text-underline-offset: 3px }
+a:hover { color: var(--red) }
+.wrap { max-width: 1600px; margin: 0 auto; padding: 0 16px }
+header.top { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 20px; padding: 28px 0 8px }
+header.top h1 { font-size: 15px; margin: 0 }
+nav.toc { display: flex; flex-wrap: wrap; gap: 4px 14px; color: var(--dim); padding-bottom: 20px; border-bottom: 1px solid var(--rule) }
+nav.toc a { text-decoration: none }
+section { padding: 28px 0 8px }
+section h2 { display: flex; gap: 14px; align-items: baseline; font-size: 13px; margin: 0 0 14px }
+section h2 .n { color: var(--red); font-weight: 400 }
+section h2 .c { color: var(--dim); font-weight: 400 }
+section h2 .d { color: var(--dim); font-weight: 400; margin-left: auto; text-align: right }
+.grid { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: 16px }
+.mason { columns: 4; column-gap: 16px }
+.mason button { margin-bottom: 16px; break-inside: avoid }
+.grid button, .mason button { all: unset; cursor: zoom-in; display: block; width: 100%; position: relative }
+.grid button:focus-visible, .mason button:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px }
+.grid img, .mason img { width: 100%; height: auto; display: block; background: var(--rule) }
+.cap { display: block; color: var(--dim); font-size: 11px; padding-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+ul.files { columns: 3; padding: 0; margin: 0; list-style: none }
+ul.files li { padding: 2px 0 }
+footer { color: var(--dim); padding: 40px 0 32px; border-top: 1px solid var(--rule); margin-top: 32px }
+.loupe { position: fixed; inset: 0; z-index: 10; background: var(--bg); display: grid; grid-template-rows: 1fr auto; padding: 16px; }
+.loupe .stage { min-height: 0; display: grid; place-items: center; cursor: zoom-out }
+.loupe img { max-width: 100%; max-height: calc(100vh - 90px); width: auto; height: auto; display: block }
+.loupe .bar { display: flex; gap: 16px; align-items: baseline; padding-top: 12px }
+.loupe .bar .n { color: var(--red) }
+.loupe .bar .t { color: var(--dim); flex: 1; min-width: 0 }
+.loupe button.nav { all: unset; cursor: pointer; font-size: 18px; padding: 0 6px }
+.loupe button.nav:hover { color: var(--red) }
+@media (max-width: 1000px) { .grid { --cols: var(--cols-m) !important } .mason { columns: 3 } ul.files { columns: 2 } }
+@media (max-width: 600px) { .grid { --cols: var(--cols-s) !important; gap: 10px } .mason { columns: 2; column-gap: 10px } .mason button { margin-bottom: 10px } section h2 { flex-wrap: wrap } section h2 .d { margin-left: 0; text-align: left; flex-basis: 100% } ul.files { columns: 1 } }
 </style>
 </head>
 <body>
-
-<div class="grid" id="grid"></div>
-<div class="loupe" id="loupe" hidden><img id="limg" alt=""></div>
-
+<div class="wrap">
+<header class="top"><h1>The Agentic Bricoleur</h1><span style="color:var(--dim)">tavole, bozze, archivio, riferimenti, codice</span></header>
+<nav class="toc" id="toc"></nav>
+<main id="main"></main>
+<section id="codice">
+  <h2><span class="n" id="codice-n"></span>Codice<span class="c">python · numpy · PIL · skia</span></h2>
+  <ul class="files" id="files"></ul>
+</section>
+<footer>Sorgenti in <a href="https://github.com/yunglong28/agentic-bricoleur/tree/main/visuals">visuals/</a>. Clic su un'immagine per ingrandirla; ← → per scorrere, Esc per chiudere.</footer>
+</div>
+<div class="loupe" id="loupe" hidden>
+  <div class="stage" id="stage"><img id="limg" alt=""></div>
+  <div class="bar"><span class="n" id="ln"></span><span class="t" id="lt"></span><button class="nav" id="lprev" aria-label="Precedente">‹</button><button class="nav" id="lnext" aria-label="Successiva">›</button></div>
+</div>
 <script>
-const files = [
-  's1-01-the-loop', 's1-02-the-tile', 's1-03-the-room', 's1-04-the-operator', 's1-05-the-rig',
-  's2-01-the-loop', 's2-02-the-tile', 's2-03-the-room', 's2-04-the-operator', 's2-05-the-rig',
-  's3-01-the-loop', 's3-02-the-tile', 's3-03-the-room', 's3-04-the-operator', 's3-05-the-rig',
-  'ar-a1-access-to-tools', 'ar-a2-drop-city', 'ar-a3-lib-dream', 'ar-a4-human-use', 'ar-a5-radical-terrain',
-  'gu-g1-guild-arms', 'gu-g2-prozodezhda', 'gu-g3-supersurface', 'gu-g4-the-vine', 'gu-g5-rose-window',
-].map(f => `img/${f}.jpg`);
-const grid = document.getElementById('grid'), loupe = document.getElementById('loupe'), limg = document.getElementById('limg');
-let cur = 0;
-const show = i => { cur = (i + files.length) % files.length; limg.src = files[cur]; };
-files.forEach((src, i) => {
-  const b = document.createElement('button');
-  b.innerHTML = `<img src="${src}" alt="" loading="lazy" width="1024" height="1280">`;
-  b.onclick = () => { show(i); loupe.hidden = false; };
-  grid.append(b);
+const SECTIONS = [{"id":"tavole","t":"Tavole","d":"La serie finale.","items":[["tavole/01-the-loop.jpg",1024,1280],["tavole/02-the-tile.jpg",1024,1280],["tavole/03-the-room.jpg",1024,1280],["tavole/04-the-operator.jpg",1024,1280],["tavole/05-the-rig.jpg",1024,1280],["tavole/06-the-tray.jpg",1024,1280],["tavole/07-the-spine.jpg",1024,1280],["tavole/08-the-hive.jpg",1024,1280],["tavole/09-two-faces.jpg",1024,1280],["tavole/10-the-graft.jpg",1024,1280],["tavole/11-the-drill-down.jpg",1024,1280]]},{"id":"arena","t":"Arena","d":"","items":[["tavole/a1-access-to-tools.jpg",1024,1280],["tavole/a2-drop-city.jpg",1024,1280],["tavole/a3-lib-dream.jpg",1024,1280],["tavole/a4-human-use.jpg",1024,1280],["tavole/a5-radical-terrain.jpg",1024,1280]]},{"id":"gilda","t":"Gilda","d":"","items":[["tavole/g1-guild-arms.jpg",1024,1280],["tavole/g2-prozodezhda.jpg",1024,1280],["tavole/g3-supersurface.jpg",1024,1280],["tavole/g4-the-vine.jpg",1024,1280],["tavole/g5-rose-window.jpg",1024,1280]]},{"id":"maciunas","t":"Pannelli Maciunas","d":"","items":[["tavole/f-maciunas-panel-s1.jpg",1024,1280],["tavole/f-maciunas-panel-s2.jpg",1024,1280],["tavole/f-maciunas-panel-s3.jpg",1024,1280]]},{"id":"panorama","t":"Panorami","d":"","items":[["tavole/p-panorama-s1.jpg",3072,1280],["tavole/p-panorama-s2.jpg",3072,1280]]},{"id":"bozze","t":"Bozze","d":"Folle simulate nei luoghi di Bruegel e Bosch.","items":[["bozze/b1-giochi.jpg",1536,1024],["bozze/b2-torre.jpg",1536,1024],["bozze/b3-trionfo.jpg",1536,1024],["bozze/b4-trittico.jpg",1536,1024],["bozze/b5-occhio.jpg",1536,1024],["bozze/b6-icaro.jpg",1536,1024],["bozze/t2-trionfo.jpg",1536,1024],["bozze/w2-trittico.jpg",1536,1024]]},{"id":"prima","t":"Prima versione","d":"","items":[["archivio/prima-versione/01-the-loop.jpg",1024,1280],["archivio/prima-versione/02-the-tile.jpg",1024,1280],["archivio/prima-versione/03-the-room.jpg",1024,1280],["archivio/prima-versione/04-the-operator.jpg",1024,1280],["archivio/prima-versione/05-the-rig.jpg",1024,1280]]},{"id":"seconda","t":"Seconda versione","d":"","items":[["archivio/seconda-versione/01-the-loop.jpg",1024,1280],["archivio/seconda-versione/02-the-tile.jpg",1024,1280],["archivio/seconda-versione/03-the-room.jpg",1024,1280],["archivio/seconda-versione/04-the-operator.jpg",1024,1280],["archivio/seconda-versione/05-the-rig.jpg",1024,1280]]},{"id":"semi-loop","t":"Anteprime \u00b7 the loop","d":"Tre semi per tavola.","items":[["archivio/anteprime/the-loop/01-the-loop-s1.jpg",1024,1280],["archivio/anteprime/the-loop/01-the-loop-s2.jpg",1024,1280],["archivio/anteprime/the-loop/01-the-loop-s3.jpg",1024,1280],["archivio/anteprime/the-loop/02-the-tile-s1.jpg",1024,1280],["archivio/anteprime/the-loop/02-the-tile-s2.jpg",1024,1280],["archivio/anteprime/the-loop/02-the-tile-s3.jpg",1024,1280],["archivio/anteprime/the-loop/03-the-room-s1.jpg",1024,1280],["archivio/anteprime/the-loop/03-the-room-s2.jpg",1024,1280],["archivio/anteprime/the-loop/03-the-room-s3.jpg",1024,1280],["archivio/anteprime/the-loop/04-the-operator-s1.jpg",1024,1280],["archivio/anteprime/the-loop/04-the-operator-s2.jpg",1024,1280],["archivio/anteprime/the-loop/04-the-operator-s3.jpg",1024,1280],["archivio/anteprime/the-loop/05-the-rig-s1.jpg",1024,1280],["archivio/anteprime/the-loop/05-the-rig-s2.jpg",1024,1280],["archivio/anteprime/the-loop/05-the-rig-s3.jpg",1024,1280]]},{"id":"semi-arena","t":"Anteprime \u00b7 arena","d":"","items":[["archivio/anteprime/arena/a1-access-to-tools-s1.jpg",1024,1280],["archivio/anteprime/arena/a1-access-to-tools-s2.jpg",1024,1280],["archivio/anteprime/arena/a1-access-to-tools-s3.jpg",1024,1280],["archivio/anteprime/arena/a2-drop-city-s1.jpg",1024,1280],["archivio/anteprime/arena/a2-drop-city-s2.jpg",1024,1280],["archivio/anteprime/arena/a2-drop-city-s3.jpg",1024,1280],["archivio/anteprime/arena/a3-lib-dream-s1.jpg",1024,1280],["archivio/anteprime/arena/a3-lib-dream-s2.jpg",1024,1280],["archivio/anteprime/arena/a3-lib-dream-s3.jpg",1024,1280],["archivio/anteprime/arena/a4-human-use-s1.jpg",1024,1280],["archivio/anteprime/arena/a4-human-use-s2.jpg",1024,1280],["archivio/anteprime/arena/a4-human-use-s3.jpg",1024,1280],["archivio/anteprime/arena/a5-radical-terrain-s1.jpg",1024,1280],["archivio/anteprime/arena/a5-radical-terrain-s2.jpg",1024,1280],["archivio/anteprime/arena/a5-radical-terrain-s3.jpg",1024,1280]]},{"id":"semi-gilda","t":"Anteprime \u00b7 gilda","d":"","items":[["archivio/anteprime/guild/g1-guild-arms-s1.jpg",1024,1280],["archivio/anteprime/guild/g1-guild-arms-s2.jpg",1024,1280],["archivio/anteprime/guild/g1-guild-arms-s3.jpg",1024,1280],["archivio/anteprime/guild/g2-prozodezhda-s1.jpg",1024,1280],["archivio/anteprime/guild/g2-prozodezhda-s2.jpg",1024,1280],["archivio/anteprime/guild/g2-prozodezhda-s3.jpg",1024,1280],["archivio/anteprime/guild/g3-supersurface-s1.jpg",1024,1280],["archivio/anteprime/guild/g3-supersurface-s2.jpg",1024,1280],["archivio/anteprime/guild/g3-supersurface-s3.jpg",1024,1280],["archivio/anteprime/guild/g4-the-vine-s1.jpg",1024,1280],["archivio/anteprime/guild/g4-the-vine-s2.jpg",1024,1280],["archivio/anteprime/guild/g4-the-vine-s3.jpg",1024,1280],["archivio/anteprime/guild/g5-rose-window-s1.jpg",1024,1280],["archivio/anteprime/guild/g5-rose-window-s2.jpg",1024,1280],["archivio/anteprime/guild/g5-rose-window-s3.jpg",1024,1280]]},{"id":"fogli","t":"Fogli di contatto","d":"","items":[["archivio/anteprime/bozze-contact-sheet.jpg",1194,1208],["archivio/anteprime/maciunas-contact-sheet.jpg",1200,504],["archivio/anteprime/arena/contact-sheet.jpg",816,1672],["archivio/anteprime/guild/contact-sheet.jpg",816,676],["archivio/anteprime/the-loop/contact-sheet.jpg",816,1340],["archivio/flux-scartate/contact-sheet.jpg",548,1672],["codice/tray/proofs/parts.jpg",2048,2560]]},{"id":"flux","t":"Flux, scartate","d":"","items":[["archivio/flux-scartate/f1-fluxkit-s1.jpg",1024,1280],["archivio/flux-scartate/f1-fluxkit-s2.jpg",1024,1280],["archivio/flux-scartate/f2-event-score-s1.jpg",1024,1280],["archivio/flux-scartate/f2-event-score-s2.jpg",1024,1280],["archivio/flux-scartate/f3-prospectus-s1.jpg",1024,1280],["archivio/flux-scartate/f3-prospectus-s2.jpg",1024,1280],["archivio/flux-scartate/f4-flux-diagram-s1.jpg",1024,1280],["archivio/flux-scartate/f4-flux-diagram-s2.jpg",1024,1280],["archivio/flux-scartate/f5-stamp-sheet-s1.jpg",1024,1280],["archivio/flux-scartate/f5-stamp-sheet-s2.jpg",1024,1280]]},{"id":"riferimenti","t":"Riferimenti","d":"","items":[["riferimenti/0f93d7a59e1b6b8723b37bdb6c74fc26.jpg",720,405],["riferimenti/15816c0126e9b50c99ba001ed1e94fb5.jpg",736,500],["riferimenti/58166788feadaffdfc5540d274dde701.jpg",735,490],["riferimenti/photo_2026-10-09_19.27.35.jpeg",1024,1280],["riferimenti/photo_2026-10-09_19.27.37.jpeg",1024,1280],["riferimenti/photo_2026-10-09_19.27.38.jpeg",1024,1280],["riferimenti/photo_2026-10-09_19.27.40.jpeg",800,800]]}];
+const CAPTIONS = {
+  't2-trionfo': 'Il trionfo, folle in moto — Bruegel · Ian Cheng',
+  'w2-trittico': 'Il trittico, tre regimi — Bosch · Ian Cheng',
+  'b1-giochi': 'Giochi degli agenti — Bruegel, Giochi di bambini',
+  'b2-torre': 'La torre — Bruegel, Torre di Babele',
+  'b3-trionfo': 'Il trionfo — Bruegel, Trionfo della Morte',
+  'b4-trittico': 'Il trittico — Bosch, Giardino delle delizie',
+  'b5-occhio': 'L\'occhio — Bosch, Tavola dei sette peccati',
+  'b6-icaro': 'La caduta trascurata — Bruegel, Caduta di Icaro',
+};
+const FILES = ['bricoleur.py', 'bricoleur2.py', 'bricoleur3.py', 'bricoleur4.py', 'bricoleur5.py', 'bricoleur6.py',
+  'bricoleur7.py', 'bricoleur8.py', 'bricoleur9.py', 'bricoleur10.py', 'kit.py', 'reinc_icons.json',
+  'tray/draw.py', 'tray/parts.py', 'tray/press.py', 'tray/proof_parts.py'];
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2, '0');
+const name = src => src.split('/').pop().replace(/\.(jpe?g|png)$/i, '');
+const all = [];
+SECTIONS.forEach((s, si) => {
+  const sec = document.createElement('section'); sec.id = s.id;
+  sec.innerHTML = `<h2><span class="n">${pad(si + 1)}</span>${s.t}<span class="c">${s.items.length}</span>${s.d ? `<span class="d">${s.d}</span>` : ''}</h2>`;
+  const ratios = s.items.map(([, w, h]) => w / h), r = ratios[0];
+  const mixed = ratios.some(x => Math.abs(x - r) > .05);
+  const box = document.createElement('div');
+  if (mixed) box.className = 'mason';
+  else {
+    const cols = r > 2 ? 1 : Math.max(1, Math.min(5, Math.round(4 / r)));
+    box.className = 'grid';
+    box.style.cssText = `--cols:${cols};--cols-m:${Math.max(1, Math.min(cols, 3))};--cols-s:${Math.max(1, Math.min(cols, r > 1.2 ? 1 : 2))}`;
+  }
+  s.items.forEach(([f, w, h]) => {
+    const k = all.length, cap = CAPTIONS[name(f)] || name(f);
+    all.push({ src: 'visuals/' + f, cap: `${s.t} · ${cap}` });
+    const b = document.createElement('button');
+    b.setAttribute('aria-label', cap);
+    b.innerHTML = `<img src="visuals/${f}" alt="" loading="lazy" width="${w}" height="${h}"><span class="cap">${cap}</span>`;
+    b.onclick = () => open(k);
+    box.append(b);
+  });
+  sec.append(box); $('main').append(sec);
+  const a = document.createElement('a'); a.href = '#' + s.id; a.textContent = s.t; $('toc').append(a);
 });
-loupe.onclick = () => { loupe.hidden = true; };
+$('codice-n').textContent = pad(SECTIONS.length + 1);
+{ const a = document.createElement('a'); a.href = '#codice'; a.textContent = 'Codice'; $('toc').append(a); }
+FILES.forEach(f => { const li = document.createElement('li'); li.innerHTML = `<a href="visuals/codice/${f}">${f}</a>`; $('files').append(li); });
+
+let cur = 0;
+const show = i => {
+  cur = (i + all.length) % all.length;
+  $('limg').src = all[cur].src; $('ln').textContent = `${cur + 1} / ${all.length}`; $('lt').textContent = all[cur].cap;
+  new Image().src = all[(cur + 1) % all.length].src;
+};
+const open = i => { show(i); $('loupe').hidden = false; };
+$('stage').onclick = () => { $('loupe').hidden = true; };
+$('lprev').onclick = () => show(cur - 1);
+$('lnext').onclick = () => show(cur + 1);
 document.addEventListener('keydown', e => {
-  if (loupe.hidden) return;
-  if (e.key === 'Escape') loupe.hidden = true;
+  if ($('loupe').hidden) return;
+  if (e.key === 'Escape') $('loupe').hidden = true;
   if (e.key === 'ArrowRight') show(cur + 1);
   if (e.key === 'ArrowLeft') show(cur - 1);
 });

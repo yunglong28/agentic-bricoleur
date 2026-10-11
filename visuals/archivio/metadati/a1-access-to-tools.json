@@ -1,0 +1,12 @@
+{
+ "plate": "a1",
+ "seed": 3,
+ "scale": 2,
+ "source": "are.na/milan-gress/counterculture-cybernetic-capitalism",
+ "coverage": {
+  "red_only": 0.0754476547241211,
+  "black": 0.0676462173461914,
+  "paper": 0.8569061279296875
+ },
+ "seconds": 1.3
+}

@@ -1,0 +1,11 @@
+{
+ "plate": "operator",
+ "seed": 1,
+ "scale": 2,
+ "coverage": {
+  "red_only": 0.24644832611083983,
+  "black": 0.05164642333984375,
+  "paper": 0.7019052505493164
+ },
+ "seconds": 1.3
+}

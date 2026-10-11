@@ -1,0 +1,12 @@
+{
+ "plate": "g4",
+ "seed": 3,
+ "scale": 1,
+ "source": "are.na/laura-mas/guild-socialism",
+ "coverage": {
+  "red_only": 0.15668182373046874,
+  "black": 0.07879638671875,
+  "paper": 0.7645217895507812
+ },
+ "seconds": 1.7
+}

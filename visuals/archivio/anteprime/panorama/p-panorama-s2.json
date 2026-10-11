@@ -1,0 +1,12 @@
+{
+ "plate": "panorama",
+ "seed": 2,
+ "scale": 1,
+ "source": "Werner T\u00fcbke, Panorama, Bad Frankenhausen",
+ "coverage": {
+  "red_only": 0.059004720052083334,
+  "black": 0.3850049336751302,
+  "paper": 0.5559903462727864
+ },
+ "seconds": 6.1
+}
