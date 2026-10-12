@@ -274,8 +274,60 @@ def banco(P):
     fig = ascii_figure(P, arms, 14); P.knock('red', fig * fld); P.ink('black', fig)
 
 
+def innesto_operator(P):
+    """The first operator's vibe (red column, mosaic screen, scribbled beam, datasheet) with the graft's two processes.
+    No halo, no wing: behind the head, where the wing was, a bundle of cables and a second sheet of leads."""
+    S = P.S; X, Y = P.X, P.Y
+    col = P.edge_tone(sd_box(P, 600, 640, 120, 700), 24, torn=12); P.ink('red', P.screen(col, 75, 5.2)); incol = col > .5
+    seam = 505 + (P.fbm(20, 3) - .5) * 30; left = X < seam
+    fig = ascii_figure(P, body(P))
+    P.knock('red', fig * incol * left); P.ink('black', fig * ~incol * left)
+    bm = mask_of(P, body(P, 6, -22)); blur = lambda r: np.asarray(Image.fromarray((bm * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(r * S)), F) / 255
+    deep = blur(34) * (blur(3) > .5)
+    iso = P.isolines(deep + (P.fbm(6, 3) - .5) * .06, list(np.linspace(.04, .98, 26)), .6) * ~left
+    P.knock('red', iso * incol); P.ink('red', iso * ~incol)
+    P.ink('black', P.screen(deep * .45, 15, 3.0) * ~left * ~incol)
+    st, std = P.layer()
+    for y in range(400, 1260, 24):
+        xx = float(seam[int(y * S), int(505 * S)]); line(std, P.pts([(xx - 12, y), (xx + 12, y + 9)]), 2 * S)
+    St_ = P.cov(st); P.knock('red', St_); P.ink('black', St_)
+    # where the wing was: cables out of the back of the head, into a sheet of leads
+    cb, cbd = P.layer()
+    for _ in range(16):
+        a = (P.rng.uniform(600, 640), P.rng.uniform(440, 560)); b_ = (P.rng.uniform(800, 990), P.rng.uniform(250, 720))
+        m = (P.rng.uniform(680, 900), P.rng.uniform(300, 700)); line(cbd, bez(P.p(*a), P.p(*m), P.p(*b_), 60), P.rng.choice([2, 2, 3, 5]) * S)
+        disc(cbd, P.p(*b_), 4 * S)
+    datasheet(P, cbd, 760, 1000, 70, 1220, 30, 8)
+    CB = P.cov(cb); P.knock('red', CB * incol); P.ink('black', CB)
+    # the console as it was: screen in red with its mosaic knocked out, keyboard, the beam to the head
+    cr, crd = P.layer(); mx = 80
+    line(crd, P.pts([(mx, 360), (mx + 120, 340), (mx + 140, 340), (mx + 140, 860), (mx + 120, 860), (mx, 830), (mx, 360)]), 4 * S)
+    crd.rectangle([*P.p(mx - 30, 860), *P.p(mx + 180, 890)], outline=255, width=4 * S)
+    line(crd, P.pts([(mx + 40, 890), (mx + 20, 1010), (mx + 160, 1010), (mx + 130, 890)]), 4 * S)
+    kx, ky = 150, 1030
+    line(crd, P.pts([(kx, ky), (kx + 260, ky - 20), (kx + 300, ky + 50), (kx + 30, ky + 80), (kx, ky)]), 4 * S)
+    for r_ in range(4):
+        for c_ in range(10):
+            x = kx + 20 + c_ * 24 + r_ * 6; y = ky + 10 + r_ * 15 - c_ * 1.8; crd.rectangle([*P.p(x, y), *P.p(x + 16, y + 9)], outline=255, width=2 * S)
+    P.ink('black', P.cov(cr))
+    sc, scd = P.layer(); scd.polygon(P.pts([(mx + 4, 364), (mx + 118, 346), (mx + 118, 852), (mx + 4, 826)]), fill=255); P.ink('red', P.cov(sc))
+    mz, mzd = P.layer()
+    for i in range(9):
+        for j in range(30):
+            if P.rng.random() < .45:
+                x = mx + 14 + i * 10; y = 372 + j * 15 - i * 1.5; mzd.rectangle([*P.p(x, y), *P.p(x + 8, y + 12)], fill=255)
+    P.knock('red', P.cov(mz))
+    bmm, bmd = P.layer()
+    for _ in range(380):
+        y = P.rng.gauss(520, 50); x0 = mx + 140 + P.rng.uniform(0, 30)
+        bmd.line([P.p(x0, y), P.p(P.rng.uniform(300, 445), y + P.rng.uniform(-28, 28))], fill=255, width=P.rng.choice([2, 2, 3, 5]) * S)
+    for _ in range(60):
+        x = P.rng.uniform(240, 440); y = P.rng.gauss(520, 46); bmd.rectangle([*P.p(x, y), *P.p(x + P.rng.uniform(6, 30), y + P.rng.uniform(3, 10))], fill=255)
+    B = P.cov(bmm); P.ink('red', B * ~incol); P.ink('black', B * incol)
+
+
 PLATES = {'s1': ('s1-supersurface-flux', supersurface_flux), 'o1': ('o1-cyberdeck', cyberdeck), 'o2': ('o2-innesto', innesto),
-          'o3': ('o3-sciame', sciame), 'o4': ('o4-banco', banco)}
+          'o3': ('o3-sciame', sciame), 'o4': ('o4-banco', banco), 'o5': ('o5-operator-innesto', innesto_operator)}
 
 
 def main():
